@@ -1,0 +1,36 @@
+<%- include('partials/header', { title: 'Тикеты' }) %>
+<h1>Тикеты <span class="muted">(<%= total %>)</span></h1>
+
+<form class="filters card" method="get" action="/tickets">
+  <input name="q" placeholder="Поиск: ID, пользователь, тема" value="<%= query.q || '' %>">
+  <select name="guild">
+    <option value="">Все серверы</option>
+    <% guilds.forEach((g) => { %><option value="<%= g.id %>" <%= query.guild === g.id ? 'selected' : '' %>><%= g.name %></option><% }) %>
+  </select>
+  <select name="status">
+    <option value="">Любой статус</option>
+    <option value="open" <%= query.status === 'open' ? 'selected' : '' %>>Открытые</option>
+    <option value="closed" <%= query.status === 'closed' ? 'selected' : '' %>>Закрытые</option>
+  </select>
+  <button class="btn btn-primary">Найти</button>
+</form>
+
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th>ID</th><th>Сервер</th><th>Пользователь</th><th>Тип</th><th>Тема</th><th>Статус</th><th>Создан</th></tr></thead>
+    <tbody>
+      <% rows.forEach((t) => { %><%- include('partials/ticket-row', { t }) %><% }) %>
+      <% if (!rows.length) { %><tr><td colspan="7" class="muted">Ничего не найдено</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+
+<% if (pages > 1) { %>
+<div class="pagination">
+  <% const qs = (p) => new URLSearchParams({ ...query, page: p }).toString(); %>
+  <% if (page > 1) { %><a class="btn" href="/tickets?<%= qs(page - 1) %>">← Назад</a><% } %>
+  <span class="muted">Стр. <%= page %> из <%= pages %></span>
+  <% if (page < pages) { %><a class="btn" href="/tickets?<%= qs(page + 1) %>">Вперёд →</a><% } %>
+</div>
+<% } %>
+<%- include('partials/footer') %>

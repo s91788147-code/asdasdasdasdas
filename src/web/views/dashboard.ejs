@@ -1,0 +1,39 @@
+<%- include('partials/header', { title: 'Дашборд' }) %>
+<h1>Дашборд</h1>
+<p class="muted">Бот: <%= botTag || 'не подключён' %></p>
+
+<div class="stats">
+  <div class="stat card"><div class="stat-value"><%= stats.total %></div><div class="muted">Всего тикетов</div></div>
+  <div class="stat card"><div class="stat-value"><%= stats.open %></div><div class="muted">Открыто</div></div>
+  <div class="stat card"><div class="stat-value"><%= stats.closed %></div><div class="muted">Закрыто</div></div>
+  <div class="stat card"><div class="stat-value"><%= stats.today %></div><div class="muted">За 24 часа</div></div>
+  <div class="stat card"><div class="stat-value"><%= stats.avgCloseMinutes %> мин</div><div class="muted">Среднее время закрытия</div></div>
+</div>
+
+<h2>Серверы</h2>
+<% if (!guilds.length) { %>
+  <div class="card muted">Бот ещё не добавлен ни на один сервер.</div>
+<% } %>
+<div class="guilds">
+  <% guilds.forEach((g) => { %>
+    <a class="guild card" href="/guilds/<%= g.id %>">
+      <% if (g.icon) { %><img src="<%= g.icon %>" alt=""><% } else { %><div class="guild-icon"><%= g.name[0] %></div><% } %>
+      <div>
+        <strong><%= g.name %></strong>
+        <div class="muted">Открыто: <%= g.stats.open %> · Всего: <%= g.stats.total %></div>
+      </div>
+    </a>
+  <% }) %>
+</div>
+
+<h2>Последние тикеты</h2>
+<div class="card table-wrap">
+  <table>
+    <thead><tr><th>ID</th><th>Сервер</th><th>Пользователь</th><th>Тип</th><th>Тема</th><th>Статус</th><th>Создан</th></tr></thead>
+    <tbody>
+      <% recent.forEach((t) => { %><%- include('partials/ticket-row', { t }) %><% }) %>
+      <% if (!recent.length) { %><tr><td colspan="7" class="muted">Тикетов пока нет</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('partials/footer') %>

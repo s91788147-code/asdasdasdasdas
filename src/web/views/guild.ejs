@@ -1,0 +1,91 @@
+<%- include('partials/header', { title: guild.name }) %>
+<h1><%= guild.name %></h1>
+<div class="stats">
+  <div class="stat card"><div class="stat-value"><%= stats.open %></div><div class="muted">Открыто</div></div>
+  <div class="stat card"><div class="stat-value"><%= stats.closed %></div><div class="muted">Закрыто</div></div>
+  <div class="stat card"><div class="stat-value"><%= stats.today %></div><div class="muted">За 24 часа</div></div>
+  <a class="stat card" href="/tickets?guild=<%= guild.id %>&status=open"><div class="stat-value">→</div><div class="muted">Открытые тикеты</div></a>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Настройки</h3>
+    <form method="post" action="/guilds/<%= guild.id %>/settings" class="form">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <label>Категория для тикетов
+        <select name="category_id">
+          <option value="">— без категории —</option>
+          <% categories.forEach((c) => { %><option value="<%= c.id %>" <%= settings.category_id === c.id ? 'selected' : '' %>><%= c.name %></option><% }) %>
+        </select>
+      </label>
+      <label>Роль поддержки
+        <select name="support_role_id">
+          <option value="">— не выбрана —</option>
+          <% roles.forEach((r) => { %><option value="<%= r.id %>" <%= settings.support_role_id === r.id ? 'selected' : '' %>>@<%= r.name %></option><% }) %>
+        </select>
+      </label>
+      <label>Канал логов
+        <select name="log_channel_id">
+          <option value="">— не выбран —</option>
+          <% textChannels.forEach((c) => { %><option value="<%= c.id %>" <%= settings.log_channel_id === c.id ? 'selected' : '' %>>#<%= c.name %></option><% }) %>
+        </select>
+      </label>
+      <label>Макс. открытых тикетов на пользователя
+        <input type="number" name="max_open_tickets" min="1" max="10" value="<%= settings.max_open_tickets %>">
+      </label>
+      <label>Заголовок панели
+        <input name="panel_title" maxlength="256" value="<%= settings.panel_title %>">
+      </label>
+      <label>Описание панели
+        <textarea name="panel_description" rows="3"><%= settings.panel_description %></textarea>
+      </label>
+      <label>Приветствие в тикете <span class="muted">({user} — упоминание автора)</span>
+        <textarea name="welcome_message" rows="3"><%= settings.welcome_message %></textarea>
+      </label>
+      <button class="btn btn-primary">Сохранить</button>
+    </form>
+  </div>
+
+  <div>
+    <div class="card" id="types">
+      <h3>Типы тикетов</h3>
+      <p class="muted">Если типов нет — панель показывает одну кнопку. Иначе — меню выбора.</p>
+      <table>
+        <tbody>
+          <% types.forEach((t) => { %>
+            <tr>
+              <td><%= t.emoji || '' %> <strong><%= t.name %></strong><div class="muted"><%= t.description || '' %></div></td>
+              <td class="right">
+                <form method="post" action="/guilds/<%= guild.id %>/types/<%= t.id %>/delete">
+                  <input type="hidden" name="_csrf" value="<%= csrf %>">
+                  <button class="btn btn-ghost btn-sm">Удалить</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+          <% if (!types.length) { %><tr><td class="muted">Типов нет</td></tr><% } %>
+        </tbody>
+      </table>
+      <form method="post" action="/guilds/<%= guild.id %>/types" class="form inline-form">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input name="emoji" placeholder="🛠" maxlength="32" class="short">
+        <input name="name" placeholder="Название" maxlength="100" required>
+        <input name="description" placeholder="Описание" maxlength="100">
+        <button class="btn">Добавить</button>
+      </form>
+    </div>
+
+    <div class="card" id="panel">
+      <h3>Отправить панель</h3>
+      <form method="post" action="/guilds/<%= guild.id %>/panel" class="form">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <select name="channel_id" required>
+          <option value="">— выберите канал —</option>
+          <% textChannels.forEach((c) => { %><option value="<%= c.id %>">#<%= c.name %></option><% }) %>
+        </select>
+        <button class="btn btn-primary">Отправить панель</button>
+      </form>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>

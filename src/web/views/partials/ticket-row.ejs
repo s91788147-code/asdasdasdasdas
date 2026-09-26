@@ -1,0 +1,9 @@
+<tr>
+  <td><a href="/tickets/<%= t.id %>">#<%= t.id %></a></td>
+  <td><%= guildName(t.guild_id) %></td>
+  <td><%= t.user_tag %></td>
+  <td><%= t.type_name || '—' %></td>
+  <td class="ellipsis"><%= t.subject || '—' %></td>
+  <td><span class="badge badge-<%= t.status %>"><%= t.status === 'open' ? 'открыт' : 'закрыт' %></span></td>
+  <td><%= fmtDate(t.created_at) %></td>
+</tr>

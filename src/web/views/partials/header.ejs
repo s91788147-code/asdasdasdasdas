@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof title !== 'undefined' ? title + ' — ' : '' %>Ticket Admin</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<% if (user) { %>
+<header class="topbar">
+  <a class="brand" href="/">🎫 Ticket Admin</a>
+  <nav>
+    <a href="/" class="<%= path === '/' ? 'active' : '' %>">Дашборд</a>
+    <a href="/tickets" class="<%= path.startsWith('/tickets') ? 'active' : '' %>">Тикеты</a>
+  </nav>
+  <form method="post" action="/logout" class="logout">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <span class="muted"><%= user %></span>
+    <button class="btn btn-ghost">Выйти</button>
+  </form>
+</header>
+<% } %>
+<main class="container">
+<% if (flash) { %>
+  <div class="flash flash-<%= flash.type %>"><%= flash.text %></div>
+<% } %>

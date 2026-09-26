@@ -1,0 +1,12 @@
+<%- include('partials/header', { title: 'Вход' }) %>
+<div class="login-box card">
+  <h1>🎫 Ticket Admin</h1>
+  <% if (error) { %><div class="flash flash-error"><%= error %></div><% } %>
+  <form method="post" action="/login">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Логин<input name="username" autocomplete="username" required autofocus></label>
+    <label>Пароль<input name="password" type="password" autocomplete="current-password" required></label>
+    <button class="btn btn-primary">Войти</button>
+  </form>
+</div>
+<%- include('partials/footer') %>

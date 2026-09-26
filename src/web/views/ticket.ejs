@@ -1,0 +1,54 @@
+<%- include('partials/header', { title: 'Тикет #' + ticket.id }) %>
+<a href="/tickets" class="muted">← Все тикеты</a>
+<h1>Тикет #<%= ticket.id %> <span class="badge badge-<%= ticket.status %>"><%= ticket.status === 'open' ? 'открыт' : 'закрыт' %></span></h1>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Переписка</h3>
+    <div class="messages">
+      <% messages.forEach((m) => { %>
+        <div class="message <%= m.from_panel ? 'from-panel' : '' %>">
+          <div class="message-head"><strong><%= m.author_tag %></strong> <span class="muted"><%= fmtDate(m.created_at) %></span></div>
+          <div class="message-body"><%= m.content %></div>
+        </div>
+      <% }) %>
+      <% if (!messages.length) { %><p class="muted">Сообщений пока нет.</p><% } %>
+    </div>
+
+    <% if (ticket.status === 'open') { %>
+    <form method="post" action="/tickets/<%= ticket.id %>/reply" class="reply">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <textarea name="content" rows="3" maxlength="1900" placeholder="Ответить в тикет от имени бота…" required></textarea>
+      <button class="btn btn-primary">Отправить</button>
+    </form>
+    <% } %>
+  </div>
+
+  <div>
+    <div class="card">
+      <h3>Информация</h3>
+      <dl class="info">
+        <dt>Сервер</dt><dd><%= guildName %></dd>
+        <dt>Пользователь</dt><dd><%= ticket.user_tag %><br><code><%= ticket.user_id %></code></dd>
+        <dt>Тип</dt><dd><%= ticket.type_name || '—' %></dd>
+        <dt>Тема</dt><dd><%= ticket.subject || '—' %></dd>
+        <dt>Взял</dt><dd><%= ticket.claimed_by ? ticket.claimed_by : '—' %></dd>
+        <dt>Создан</dt><dd><%= fmtDate(ticket.created_at) %></dd>
+        <dt>Закрыт</dt><dd><%= fmtDate(ticket.closed_at) %></dd>
+      </dl>
+      <a class="btn" href="/tickets/<%= ticket.id %>/transcript.txt">⬇ Скачать транскрипт</a>
+    </div>
+
+    <% if (ticket.status === 'open') { %>
+    <div class="card">
+      <h3>Закрыть тикет</h3>
+      <form method="post" action="/tickets/<%= ticket.id %>/close" onsubmit="return confirm('Закрыть тикет и удалить канал?')">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <input name="reason" maxlength="500" placeholder="Причина (необязательно)">
+        <button class="btn btn-danger">🔒 Закрыть</button>
+      </form>
+    </div>
+    <% } %>
+  </div>
+</div>
+<%- include('partials/footer') %>
